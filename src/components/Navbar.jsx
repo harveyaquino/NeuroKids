@@ -7,18 +7,10 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [signingOut, setSigningOut] = useState(false);
-
-  // try/finally garantiza que navigate() siempre se ejecuta
-  const handleSignOut = async () => {
-    setSigningOut(true);
-    try {
-      await signOut();
-    } finally {
-      setSigningOut(false);
-      setMenuOpen(false);
-      navigate('/');
-    }
+  const handleSignOut = () => {
+    setMenuOpen(false);
+    signOut();    // limpia estado al instante
+    navigate('/');
   };
 
   const isActive = (path) => location.pathname === path;
@@ -78,10 +70,9 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={handleSignOut}
-                  disabled={signingOut}
-                  className="ml-2 text-sm font-semibold text-white bg-gray-700 hover:bg-gray-900 px-4 py-1.5 rounded-lg transition-colors disabled:opacity-60"
+                  className="ml-2 text-sm font-semibold text-white bg-gray-700 hover:bg-gray-900 px-4 py-1.5 rounded-lg transition-colors"
                 >
-                  {signingOut ? 'Saliendo...' : 'Salir'}
+                  Salir
                 </button>
               </>
             ) : (
@@ -149,10 +140,9 @@ export default function Navbar() {
                   )}
                   <button
                     onClick={handleSignOut}
-                    disabled={signingOut}
-                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-60 mt-1"
+                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 mt-1"
                   >
-                    {signingOut ? 'Saliendo...' : 'Cerrar sesión'}
+                    Cerrar sesión
                   </button>
                 </div>
               </>

@@ -104,11 +104,13 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signOut = () => {
+    // Limpiar estado local de inmediato — no esperar a Supabase
     setUser(null);
     setProfile(null);
     setSession(null);
+    // Invalidar sesión en Supabase en background (fire & forget)
+    supabase.auth.signOut().catch(console.error);
   };
 
   const isEmailVerified = () => user?.email_confirmed_at != null;
