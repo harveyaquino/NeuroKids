@@ -10,24 +10,14 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
-        if (event === 'SIGNED_IN' && session?.user) {
+        if (session?.user) {
           await fetchProfile(session.user.id);
-        } else if (event === 'SIGNED_OUT') {
+        } else {
           setProfile(null);
           setLoading(false);
         }
