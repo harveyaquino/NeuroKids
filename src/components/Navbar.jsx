@@ -29,10 +29,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:bg-primary-dark transition-colors">
-              <span className="text-white font-bold text-xs">NK</span>
+              <span className="text-white font-bold text-xs">CI</span>
             </div>
             <span className="font-display font-bold text-gray-900 text-lg">
-              Neuro<span className="text-primary">Kids</span>
+              Conociendo<span className="text-primary">IA</span>
             </span>
           </Link>
 

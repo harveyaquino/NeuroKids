@@ -51,7 +51,7 @@ export default function Admin() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold text-gray-900">Panel Admin</h1>
-          <p className="text-gray-500 text-sm mt-1">NeuroKids — Control total</p>
+          <p className="text-gray-500 text-sm mt-1">ConociendoIA — Control total</p>
         </div>
 
         {/* Stats */}

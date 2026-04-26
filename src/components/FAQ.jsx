@@ -19,7 +19,7 @@ const FAQS = [
   },
   {
     q: '¿Cómo recibo el archivo después de comprar?',
-    a: 'Inmediatamente después de confirmar tu pago, el PDF queda disponible en tu dashboard personal. Puedes descargarlo cuantas veces quieras con tu cuenta activa en NeuroKids.',
+    a: 'Inmediatamente después de confirmar tu pago, el PDF queda disponible en tu dashboard personal. Puedes descargarlo cuantas veces quieras con tu cuenta activa en ConociendoIA.',
   },
 ];
 

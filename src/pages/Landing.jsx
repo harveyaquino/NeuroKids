@@ -62,7 +62,7 @@ function KitMockup() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-display font-bold text-gray-900 text-sm">Así piensa la IA</div>
-            <div className="text-gray-500 text-xs">Kit #1 — NeuroKids</div>
+            <div className="text-gray-500 text-xs">Kit #1 — ConociendoIA.com</div>
           </div>
           <div className="bg-accent text-white text-sm font-bold px-3 py-1.5 rounded-full shrink-0">S/ 49</div>
         </div>
@@ -338,7 +338,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">La solución</p>
-            <h2 className="section-title">NeuroKids: IA tangible,<br />aprendizaje real</h2>
+            <h2 className="section-title">ConociendoIA: IA tangible,<br />aprendizaje real</h2>
             <p className="section-subtitle max-w-2xl mx-auto">
               Materiales 100% imprimibles pensados para docentes sin experiencia técnica,
               que convierten conceptos de IA en actividades físicas y divertidas.
@@ -441,7 +441,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">Colección completa</p>
-            <h2 className="section-title">La línea NeuroKids</h2>
+            <h2 className="section-title">La línea ConociendoIA</h2>
             <p className="section-subtitle max-w-xl mx-auto">Una secuencia pedagógica completa para cubrir IA generativa de principio a fin.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -533,7 +533,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">Audiencia</p>
-            <h2 className="section-title">¿Para quién es NeuroKids?</h2>
+            <h2 className="section-title">¿Para quién es ConociendoIA?</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {AUDIENCES.map((a) => (
@@ -587,7 +587,7 @@ export default function Landing() {
             🗓️ Próximamente
           </div>
           <h2 className="font-display font-black text-3xl sm:text-4xl text-white mb-4 leading-tight">
-            Talleres NeuroKids
+            Talleres ConociendoIA
           </h2>
           <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
             Sesiones en vivo donde docentes aprenden a facilitar el kit
@@ -607,7 +607,7 @@ export default function Landing() {
               {
                 icon: '👧',
                 title: 'Para niños',
-                desc: 'Taller donde los niños viven la experiencia NeuroKids en grupo, guiados por un facilitador. Edades 6–12 años.',
+                desc: 'Taller donde los niños viven la experiencia ConociendoIA en grupo, guiados por un facilitador. Edades 6–12 años.',
                 tag: 'Taller para niños',
                 color: 'border-orange-500/30 bg-orange-500/10',
               },
@@ -673,10 +673,10 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">NK</span>
+              <span className="text-white font-bold text-xs">CI</span>
             </div>
-            <span className="font-display font-bold text-white">NeuroKids</span>
-            <span className="text-gray-500 text-sm hidden sm:inline">— Aprende IA como nunca lo imaginaste</span>
+            <span className="font-display font-bold text-white">Conociendo<span className="text-blue-400">IA</span></span>
+            <span className="text-gray-500 text-sm hidden sm:inline">— Aprende IA sin pantallas</span>
           </div>
           <div className="flex items-center gap-4 text-gray-500 text-sm">
             <span>Creado por{' '}
@@ -684,7 +684,7 @@ export default function Landing() {
                 Harvey Aquino
               </a>
             </span>
-            <span>© 2025 NeuroKids</span>
+            <span>© 2026 ConociendoIA</span>
           </div>
         </div>
       </footer>
