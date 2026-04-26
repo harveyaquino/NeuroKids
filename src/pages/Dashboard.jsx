@@ -3,12 +3,22 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 
+function formatFileName(name) {
+  return name
+    .replace(/^neurokids_/, '')
+    .replace(/\.docx$/, '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function Dashboard() {
   const { user, profile } = useAuth();
-  const [purchases, setPurchases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState({});
-  const [error, setError] = useState('');
+  const [purchases, setPurchases]   = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [openKit, setOpenKit]       = useState(null);
+  const [kitFiles, setKitFiles]     = useState({});
+  const [loadingFiles, setLoadingFiles] = useState({});
+  const [error, setError]           = useState('');
 
   useEffect(() => { if (user) fetchPurchases(); }, [user]);
 
@@ -26,8 +36,12 @@ export default function Dashboard() {
     finally { setLoading(false); }
   };
 
-  const handleDownload = async (productId, productName) => {
-    setDownloading((p) => ({ ...p, [productId]: true }));
+  const loadFiles = async (productId) => {
+    if (kitFiles[productId]) {
+      setOpenKit(openKit === productId ? null : productId);
+      return;
+    }
+    setLoadingFiles((p) => ({ ...p, [productId]: true }));
     setError('');
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -37,14 +51,14 @@ export default function Dashboard() {
         body: JSON.stringify({ product_id: productId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error al generar enlace');
-      const a = document.createElement('a');
-      a.href = data.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      a.download = `${productName.replace(/\s+/g, '_')}.pdf`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      if (!res.ok) throw new Error(data.error || 'Error al obtener archivos');
+      setKitFiles((p) => ({ ...p, [productId]: data.files }));
+      setOpenKit(productId);
     } catch (err) {
-      setError(err.message || 'Error al descargar. Inténtalo de nuevo.');
-    } finally { setDownloading((p) => ({ ...p, [productId]: false })); }
+      setError(err.message || 'Error al cargar archivos. Inténtalo de nuevo.');
+    } finally {
+      setLoadingFiles((p) => ({ ...p, [productId]: false }));
+    }
   };
 
   if (loading) {
@@ -61,14 +75,13 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold text-gray-900">
             Hola, {firstName} 👋
           </h1>
           <p className="text-gray-600 mt-1">
             {purchases.length > 0
-              ? `${purchases.length} kit${purchases.length > 1 ? 's' : ''} disponible${purchases.length > 1 ? 's' : ''} para descargar`
+              ? `${purchases.length} kit${purchases.length > 1 ? 's' : ''} disponible${purchases.length > 1 ? 's' : ''}`
               : 'Aquí aparecerán tus kits después de comprar'}
           </p>
         </div>
@@ -82,43 +95,78 @@ export default function Dashboard() {
         {purchases.length === 0 ? (
           <div className="text-center py-24 bg-white border border-gray-100 rounded-2xl shadow-sm">
             <div className="text-5xl mb-4">📦</div>
-            <h2 className="text-xl font-display font-bold text-gray-900 mb-2">
-              Aún no tienes kits
-            </h2>
+            <h2 className="text-xl font-display font-bold text-gray-900 mb-2">Aún no tienes kits</h2>
             <p className="text-gray-600 mb-8 max-w-xs mx-auto text-sm">
               Explora nuestra colección y empieza a enseñar IA en tu aula hoy
             </p>
-            <Link to="/" className="btn-primary">
-              Ver Kits Disponibles
-            </Link>
+            <Link to="/" className="btn-primary">Ver Kits Disponibles</Link>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {purchases.map((purchase) => (
-              <div key={purchase.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center text-2xl">🧠</div>
-                  <span className="bg-green-50 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full border border-green-100">Activo</span>
-                </div>
-                <h3 className="font-display font-bold text-gray-900 text-lg mb-1">{purchase.products.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{purchase.products.description}</p>
-                <div className="flex items-center justify-between text-xs text-gray-400 mb-4 pt-3 border-t border-gray-100">
-                  <span>{new Date(purchase.created_at).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                  <span className="font-medium">S/ {(purchase.amount_paid / 100).toFixed(2)}</span>
-                </div>
-                <button
-                  onClick={() => handleDownload(purchase.products.id, purchase.products.name)}
-                  disabled={downloading[purchase.products.id]}
-                  className="btn-primary w-full disabled:opacity-50"
-                >
-                  {downloading[purchase.products.id] ? (
-                    <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" /> Preparando...</>
-                  ) : (
-                    <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Descargar PDF</>
+          <div className="flex flex-col gap-5">
+            {purchases.map((purchase) => {
+              const pid   = purchase.products.id;
+              const files = kitFiles[pid];
+              const isOpen = openKit === pid;
+
+              return (
+                <div key={purchase.id} className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                  {/* Header del kit */}
+                  <div className="p-6 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🧠</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-display font-bold text-gray-900 text-lg">{purchase.products.name}</h3>
+                        <span className="bg-green-50 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full border border-green-100">Activo</span>
+                      </div>
+                      <p className="text-gray-500 text-sm mt-0.5">
+                        Comprado el {new Date(purchase.created_at).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {' · '}S/ {(purchase.amount_paid / 100).toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => loadFiles(pid)}
+                      disabled={loadingFiles[pid]}
+                      className="btn-primary flex-shrink-0 disabled:opacity-50"
+                    >
+                      {loadingFiles[pid] ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" />
+                      ) : isOpen ? (
+                        'Cerrar'
+                      ) : (
+                        'Ver archivos'
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Lista de archivos */}
+                  {isOpen && files && (
+                    <div className="border-t border-gray-100 divide-y divide-gray-50">
+                      {files.map((file) => (
+                        <div key={file.name} className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="text-xl">📄</span>
+                            <span className="text-sm text-gray-700 truncate">{formatFileName(file.name)}</span>
+                          </div>
+                          {file.url ? (
+                            <a
+                              href={file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download={file.name}
+                              className="btn-secondary text-sm flex-shrink-0 ml-4"
+                            >
+                              Descargar
+                            </a>
+                          ) : (
+                            <span className="text-xs text-red-400 ml-4">No disponible</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
-                </button>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
