@@ -10,8 +10,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fallback: si onAuthStateChange nunca dispara (red caída, etc.), desbloquear UI
+    const fallback = setTimeout(() => setLoading(false), 5000);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        clearTimeout(fallback);
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -24,7 +28,10 @@ export function AuthProvider({ children }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(fallback);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchProfile = async (userId) => {
@@ -95,12 +102,12 @@ export function AuthProvider({ children }) {
   };
 
   const signOut = () => {
-    // Limpiar estado local de inmediato — no esperar a Supabase
     setUser(null);
     setProfile(null);
     setSession(null);
-    // Invalidar sesión en Supabase en background (fire & forget)
-    supabase.auth.signOut().catch(console.error);
+    // scope:'local' borra el token de localStorage sincrónicamente sin llamada de red,
+    // cortando cualquier race condition con TOKEN_REFRESHED en vuelo
+    supabase.auth.signOut({ scope: 'local' }).catch(console.error);
   };
 
   const isEmailVerified = () => user?.email_confirmed_at != null;
