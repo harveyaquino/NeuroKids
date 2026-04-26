@@ -27,25 +27,23 @@ export default function FAQ() {
   const [open, setOpen] = useState(null);
 
   return (
-    <div className="space-y-3">
+    <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden">
       {FAQS.map((faq, i) => (
-        <div key={i} className="border border-white/10 rounded-xl overflow-hidden">
+        <div key={i}>
           <button
             onClick={() => setOpen(open === i ? null : i)}
-            className="w-full flex items-center justify-between p-5 text-left bg-white/5 hover:bg-white/10 transition-colors"
+            className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition-colors"
           >
-            <span className="font-semibold text-white pr-4 text-sm sm:text-base">{faq.q}</span>
+            <span className="font-semibold text-gray-900 pr-4 text-sm sm:text-base">{faq.q}</span>
             <svg
-              className={`flex-shrink-0 w-5 h-5 text-primary transition-transform duration-200 ${open === i ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              className={`flex-shrink-0 w-5 h-5 text-gray-400 transition-transform duration-200 ${open === i ? 'rotate-180 text-primary' : ''}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           {open === i && (
-            <div className="px-5 pb-5 pt-3 bg-white/[0.02] text-white/70 text-sm leading-relaxed">
+            <div className="px-6 pb-5 text-gray-500 text-sm leading-relaxed bg-gray-50/50">
               {faq.a}
             </div>
           )}

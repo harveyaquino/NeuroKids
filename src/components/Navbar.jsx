@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Navbar() {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -13,115 +14,93 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <nav className="fixed w-full z-50 top-0 left-0 bg-dark/90 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed w-full z-50 top-0 left-0 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
+
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:bg-primary/80 transition-colors">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:bg-primary-dark transition-colors">
               <span className="text-white font-bold text-xs">NK</span>
             </div>
-            <span className="font-display font-bold text-white text-lg">NeuroKids</span>
+            <span className="font-display font-bold text-gray-900 text-lg">
+              Neuro<span className="text-primary">Kids</span>
+            </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-1">
             {user ? (
               <>
                 <Link
                   to="/dashboard"
-                  className="text-white/70 hover:text-white transition-colors text-sm font-medium"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/dashboard') ? 'bg-primary-light text-primary' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
                 >
                   Mis Kits
                 </Link>
                 {profile?.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="text-white/70 hover:text-white transition-colors text-sm font-medium"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/admin') ? 'bg-primary-light text-primary' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
                   >
                     Admin
                   </Link>
                 )}
-                <span className="text-white/40 text-sm truncate max-w-[160px]">
-                  {profile?.full_name || user.email}
+                <div className="w-px h-5 bg-gray-200 mx-2" />
+                <span className="text-sm text-gray-500 max-w-[140px] truncate">
+                  {profile?.full_name?.split(' ')[0] || user.email}
                 </span>
-                <button onClick={handleSignOut} className="btn-secondary !py-2 !px-4 text-sm">
+                <button
+                  onClick={handleSignOut}
+                  className="ml-2 text-sm text-gray-500 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                >
                   Salir
                 </button>
               </>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="text-white/70 hover:text-white transition-colors text-sm font-medium"
-                >
+                <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                   Iniciar sesión
                 </Link>
-                <Link to="/login?mode=signup" className="btn-primary !py-2 !px-4 text-sm">
-                  Registrarse
+                <Link to="/login?mode=signup" className="btn-primary !py-2 !px-4 text-sm ml-1">
+                  Registrarse gratis
                 </Link>
               </>
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden text-white p-1"
-            aria-label="Menú"
+            className="md:hidden p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {menuOpen
+                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              }
             </svg>
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         {menuOpen && (
-          <div className="md:hidden pb-4 border-t border-white/10 pt-4 space-y-3">
+          <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
             {user ? (
               <>
-                <Link
-                  to="/dashboard"
-                  className="block text-white/70 hover:text-white text-sm"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Mis Kits
-                </Link>
+                <Link to="/dashboard" className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onClick={() => setMenuOpen(false)}>Mis Kits</Link>
                 {profile?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="block text-white/70 hover:text-white text-sm"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Admin
-                  </Link>
+                  <Link to="/admin" className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onClick={() => setMenuOpen(false)}>Admin</Link>
                 )}
-                <button onClick={handleSignOut} className="btn-secondary !py-2 w-full text-sm">
-                  Cerrar sesión
-                </button>
+                <button onClick={handleSignOut} className="w-full text-left px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50">Cerrar sesión</button>
               </>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className="block text-white/70 hover:text-white text-sm"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Iniciar sesión
-                </Link>
-                <Link
-                  to="/login?mode=signup"
-                  className="btn-primary !py-2 w-full text-sm"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Registrarse
-                </Link>
+                <Link to="/login" className="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onClick={() => setMenuOpen(false)}>Iniciar sesión</Link>
+                <Link to="/login?mode=signup" className="block px-3 py-2 rounded-lg text-sm font-semibold text-primary" onClick={() => setMenuOpen(false)}>Registrarse gratis</Link>
               </>
             )}
           </div>

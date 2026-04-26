@@ -1,33 +1,43 @@
 export default function KitCard({ kit, onBuy, loading }) {
   return (
-    <div className={`card flex flex-col ${kit.available ? 'hover:-translate-y-1' : 'opacity-60'} transition-transform duration-300`}>
-      <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">
-        {kit.icon}
-      </div>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="bg-accent/20 text-accent text-xs font-bold px-2 py-0.5 rounded-full">
-          Kit #{kit.number}
-        </span>
+    <div className={`bg-white border rounded-2xl p-6 flex flex-col transition-all duration-300 ${
+      kit.available
+        ? 'border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer'
+        : 'border-gray-100 opacity-70'
+    }`}>
+      <div className="flex items-start justify-between mb-4">
+        <div className="w-11 h-11 bg-primary-light rounded-xl flex items-center justify-center text-2xl">
+          {kit.icon}
+        </div>
         {!kit.available && (
-          <span className="bg-white/10 text-white/40 text-xs px-2 py-0.5 rounded-full">
+          <span className="bg-gray-100 text-gray-400 text-xs font-semibold px-2.5 py-1 rounded-full">
             Próximamente
           </span>
         )}
+        {kit.available && (
+          <span className="bg-green-50 text-green-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-100">
+            ✓ Disponible
+          </span>
+        )}
       </div>
-      <h3 className="font-display font-bold text-white text-lg mb-2">{kit.name}</h3>
-      <p className="text-white/60 text-sm flex-1 mb-4">{kit.description}</p>
+
+      <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2">
+        Kit #{kit.number}
+      </div>
+      <h3 className="font-display font-bold text-gray-900 text-lg mb-2 leading-snug">{kit.name}</h3>
+      <p className="text-gray-500 text-sm flex-1 mb-5 leading-relaxed">{kit.description}</p>
 
       {kit.available ? (
         <>
           <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-2xl font-display font-bold text-white">S/ {kit.price}</span>
+            <span className="text-3xl font-display font-bold text-gray-900">S/ {kit.price}</span>
             {kit.originalPrice && (
-              <span className="text-white/40 line-through text-sm">S/ {kit.originalPrice}</span>
-            )}
-            {kit.originalPrice && (
-              <span className="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full font-semibold ml-1">
-                -{Math.round((1 - kit.price / kit.originalPrice) * 100)}%
-              </span>
+              <>
+                <span className="text-gray-400 line-through text-sm">S/ {kit.originalPrice}</span>
+                <span className="bg-orange-100 text-accent text-xs font-bold px-2 py-0.5 rounded-full">
+                  -{Math.round((1 - kit.price / kit.originalPrice) * 100)}%
+                </span>
+              </>
             )}
           </div>
           <button
@@ -35,11 +45,13 @@ export default function KitCard({ kit, onBuy, loading }) {
             disabled={loading}
             className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Procesando...' : 'Comprar Kit'}
+            {loading ? (
+              <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" /> Procesando...</>
+            ) : 'Comprar Kit'}
           </button>
         </>
       ) : (
-        <div className="mt-auto pt-4 border-t border-white/10 text-center text-white/40 text-sm">
+        <div className="pt-4 border-t border-gray-100 text-center text-gray-400 text-sm font-medium">
           Disponible pronto
         </div>
       )}
