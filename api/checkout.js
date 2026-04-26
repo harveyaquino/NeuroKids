@@ -116,6 +116,10 @@ export default async function handler(req, res) {
   const appUrl = appUrlEnv || (vercelUrl ? `https://${vercelUrl}` : 'http://localhost:5173');
   const unitPrice = Number((product.price / 100).toFixed(2));
 
+  const isTest   = mpToken.startsWith('TEST-');
+  // En test mode MP requiere un email de comprador de prueba distinto al vendedor
+  const payerEmail = isTest ? 'test_user_buyer@testuser.com' : user.email;
+
   const prefBody = {
     items: [{
       id:          String(product.id),
@@ -125,7 +129,7 @@ export default async function handler(req, res) {
       unit_price:  unitPrice,
       currency_id: 'PEN',
     }],
-    payer:              { email: user.email },
+    payer:              { email: payerEmail },
     back_urls:          {
       success: `${appUrl}/success`,
       failure: `${appUrl}/cancel`,
@@ -169,9 +173,15 @@ export default async function handler(req, res) {
     .eq('id', purchase.id)
     .then(({ error }) => { if (error) console.error('mp_preference_id update:', error); });
 
-  const checkoutUrl = mpData.init_point || mpData.sandbox_init_point;
+  // TEST tokens usan sandbox_init_point, producción usa init_point
+  const checkoutUrl = isTest
+    ? (mpData.sandbox_init_point || mpData.init_point)
+    : (mpData.init_point || mpData.sandbox_init_point);
+
+  console.log('isTest:', isTest, 'url:', checkoutUrl);
+
   if (!checkoutUrl) {
-    console.error('MP response missing init_point:', mpData);
+    console.error('MP response missing checkout url:', JSON.stringify(mpData));
     return res.status(500).json({ error: 'Respuesta inválida de Mercado Pago' });
   }
 
