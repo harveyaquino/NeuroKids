@@ -1,0 +1,25 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/webhook.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/checkout.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/download.js": {
+      "memory": 256,
+      "maxDuration": 10
+    }
+  }
+}
