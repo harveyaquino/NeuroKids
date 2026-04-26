@@ -181,6 +181,7 @@ export default function Landing() {
   const [kit1, setKit1]                   = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
+  const [purchasedIds, setPurchasedIds]   = useState(new Set());
 
   useEffect(() => {
     supabase
@@ -192,6 +193,18 @@ export default function Landing() {
       .maybeSingle()
       .then(({ data }) => setKit1(data));
   }, []);
+
+  useEffect(() => {
+    if (!user) { setPurchasedIds(new Set()); return; }
+    supabase
+      .from('purchases')
+      .select('product_id')
+      .eq('user_id', user.id)
+      .eq('status', 'completed')
+      .then(({ data }) => {
+        if (data) setPurchasedIds(new Set(data.map((p) => p.product_id)));
+      });
+  }, [user]);
 
   const scrollToKit = () =>
     kit1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -391,18 +404,27 @@ export default function Landing() {
                   <span className="text-gray-400 line-through text-xl">S/ 79</span>
                 </div>
                 <p className="text-green-600 text-sm font-semibold mb-7">Ahorras S/ 30 en precio de lanzamiento</p>
-                <button
-                  onClick={() => handleCheckout(kit1?.id)}
-                  disabled={checkoutLoading}
-                  className="btn-primary w-full text-base py-4 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
-                >
-                  {checkoutLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
-                      Procesando...
-                    </span>
-                  ) : '🛒  Comprar ahora — S/ 49'}
-                </button>
+                {purchasedIds.has(kit1?.id) ? (
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-primary w-full text-base py-4 mb-4"
+                  >
+                    ✓ Ir a mi Kit →
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout(kit1?.id)}
+                    disabled={checkoutLoading}
+                    className="btn-primary w-full text-base py-4 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
+                  >
+                    {checkoutLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
+                        Procesando...
+                      </span>
+                    ) : '🛒  Comprar ahora — S/ 49'}
+                  </button>
+                )}
                 <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-500 border-t border-gray-100 pt-4">
                   <div className="flex flex-col items-center gap-1"><span className="text-lg">🔒</span>Pago seguro</div>
                   <div className="flex flex-col items-center gap-1"><span className="text-lg">⚡</span>Descarga inmediata</div>
@@ -423,7 +445,15 @@ export default function Landing() {
             <p className="section-subtitle max-w-xl mx-auto">Una secuencia pedagógica completa para cubrir IA generativa de principio a fin.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {kit1Data && <KitCard kit={kit1Data} onBuy={handleCheckout} loading={checkoutLoading} />}
+            {kit1Data && (
+              <KitCard
+                kit={kit1Data}
+                onBuy={handleCheckout}
+                loading={checkoutLoading}
+                purchased={purchasedIds.has(kit1?.id)}
+                onGoToKit={() => navigate('/dashboard')}
+              />
+            )}
             {COMING_SOON.map((kit) => <KitCard key={kit.number} kit={kit} />)}
           </div>
         </div>
@@ -457,13 +487,19 @@ export default function Landing() {
                   </div>
                 ))}
               </div>
-              <button
-                onClick={() => handleCheckout(kit1?.id)}
-                disabled={checkoutLoading}
-                className="btn-accent py-4 px-8 text-base disabled:opacity-60"
-              >
-                🛒 Comprar Kit para casa — S/ 49
-              </button>
+              {purchasedIds.has(kit1?.id) ? (
+                <button onClick={() => navigate('/dashboard')} className="btn-accent py-4 px-8 text-base">
+                  ✓ Ir a mi Kit →
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleCheckout(kit1?.id)}
+                  disabled={checkoutLoading}
+                  className="btn-accent py-4 px-8 text-base disabled:opacity-60"
+                >
+                  🛒 Comprar Kit para casa — S/ 49
+                </button>
+              )}
             </div>
 
             {/* Visual */}
@@ -612,13 +648,22 @@ export default function Landing() {
           <p className="text-blue-100 text-lg mb-10">
             Únete a los docentes que ya están preparando a sus alumnos para el futuro.
           </p>
-          <button
-            onClick={() => handleCheckout(kit1?.id)}
-            disabled={checkoutLoading}
-            className="bg-white hover:bg-gray-50 text-primary font-bold text-lg py-4 px-12 rounded-xl transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 cursor-pointer"
-          >
-            {checkoutLoading ? 'Procesando...' : 'Comprar Kit #1 — S/ 49 →'}
-          </button>
+          {purchasedIds.has(kit1?.id) ? (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="bg-white hover:bg-gray-50 text-primary font-bold text-lg py-4 px-12 rounded-xl transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] cursor-pointer"
+            >
+              ✓ Ir a mi Kit →
+            </button>
+          ) : (
+            <button
+              onClick={() => handleCheckout(kit1?.id)}
+              disabled={checkoutLoading}
+              className="bg-white hover:bg-gray-50 text-primary font-bold text-lg py-4 px-12 rounded-xl transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 cursor-pointer"
+            >
+              {checkoutLoading ? 'Procesando...' : 'Comprar Kit #1 — S/ 49 →'}
+            </button>
+          )}
           <p className="text-blue-200 text-sm mt-4">Precio de lanzamiento · Descarga inmediata · Garantía 30 días</p>
         </div>
       </section>

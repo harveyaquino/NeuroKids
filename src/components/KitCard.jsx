@@ -1,4 +1,4 @@
-export default function KitCard({ kit, onBuy, loading }) {
+export default function KitCard({ kit, onBuy, loading, purchased, onGoToKit }) {
   return (
     <div className={`bg-white border rounded-2xl p-6 flex flex-col transition-all duration-300 ${
       kit.available
@@ -40,15 +40,24 @@ export default function KitCard({ kit, onBuy, loading }) {
               </>
             )}
           </div>
-          <button
-            onClick={() => onBuy && onBuy(kit.productId)}
-            disabled={loading}
-            className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" /> Procesando...</>
-            ) : 'Comprar Kit'}
-          </button>
+          {purchased ? (
+            <button
+              onClick={() => onGoToKit && onGoToKit()}
+              className="btn-primary w-full"
+            >
+              ✓ Ir a mi Kit →
+            </button>
+          ) : (
+            <button
+              onClick={() => onBuy && onBuy(kit.productId)}
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" /> Procesando...</>
+              ) : 'Comprar Kit'}
+            </button>
+          )}
         </>
       ) : (
         <div className="pt-4 border-t border-gray-100 text-center text-gray-400 text-sm font-medium">
