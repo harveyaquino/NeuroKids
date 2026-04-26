@@ -66,7 +66,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-display font-bold text-gray-900">
             Hola, {firstName} 👋
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-600 mt-1">
             {purchases.length > 0
               ? `${purchases.length} kit${purchases.length > 1 ? 's' : ''} disponible${purchases.length > 1 ? 's' : ''} para descargar`
               : 'Aquí aparecerán tus kits después de comprar'}
@@ -85,7 +85,7 @@ export default function Dashboard() {
             <h2 className="text-xl font-display font-bold text-gray-900 mb-2">
               Aún no tienes kits
             </h2>
-            <p className="text-gray-500 mb-8 max-w-xs mx-auto text-sm">
+            <p className="text-gray-600 mb-8 max-w-xs mx-auto text-sm">
               Explora nuestra colección y empieza a enseñar IA en tu aula hoy
             </p>
             <Link to="/" className="btn-primary">
@@ -101,7 +101,7 @@ export default function Dashboard() {
                   <span className="bg-green-50 text-green-600 text-xs font-bold px-2.5 py-1 rounded-full border border-green-100">Activo</span>
                 </div>
                 <h3 className="font-display font-bold text-gray-900 text-lg mb-1">{purchase.products.name}</h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">{purchase.products.description}</p>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{purchase.products.description}</p>
                 <div className="flex items-center justify-between text-xs text-gray-400 mb-4 pt-3 border-t border-gray-100">
                   <span>{new Date(purchase.created_at).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                   <span className="font-medium">S/ {(purchase.amount_paid / 100).toFixed(2)}</span>

@@ -4,11 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#2563EB',
-        'primary-dark': '#1D4ED8',
-        'primary-light': '#EFF6FF',
-        accent: '#F97316',
-        'accent-light': '#FFF7ED',
+        primary: {
+          DEFAULT: '#2563EB',
+          dark: '#1D4ED8',
+          light: '#EFF6FF',
+        },
+        accent: {
+          DEFAULT: '#F97316',
+          light: '#FFF7ED',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

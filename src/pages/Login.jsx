@@ -96,7 +96,7 @@ export default function Login() {
           <h1 className="text-2xl font-display font-bold text-gray-900">
             {isSignUp ? 'Crea tu cuenta' : 'Bienvenido de vuelta'}
           </h1>
-          <p className="text-gray-500 mt-1 text-sm">
+          <p className="text-gray-600 mt-1 text-sm">
             {isSignUp ? 'Empieza a enseñar IA hoy' : 'Accede a tus kits educativos'}
           </p>
         </div>
@@ -164,7 +164,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-center text-gray-500 text-sm mt-6">
+          <p className="text-center text-gray-600 text-sm mt-6">
             {isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
             <button
               onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}

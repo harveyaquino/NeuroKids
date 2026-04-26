@@ -168,16 +168,16 @@ export default function Landing() {
     <div className="bg-white">
 
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="pt-28 pb-20 px-4 overflow-hidden">
-        {/* Background subtle gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 via-white to-orange-50/40 pointer-events-none" style={{ height: '80vh' }} />
+      <section className="pt-20 pb-14 sm:pt-28 sm:pb-20 px-4 overflow-hidden">
+        {/* Background sólido sin transparencias */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50 pointer-events-none" style={{ height: '85vh' }} />
 
         <div className="max-w-6xl mx-auto relative">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
 
             {/* Left — text */}
             <div>
-              <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-blue-100">
+              <div className="inline-flex items-center gap-2 bg-primary-light text-primary-dark text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-blue-200">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 Para docentes de Perú y Latinoamérica
               </div>
@@ -188,7 +188,7 @@ export default function Landing() {
                 {' '}con tus manos
               </h1>
 
-              <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-lg">
+              <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg">
                 Kits imprimibles para que tus alumnos entiendan cómo piensa la IA —
                 sin pantallas, sin código, solo aprendizaje real.
               </p>
@@ -203,7 +203,7 @@ export default function Landing() {
               </div>
 
               {/* Social proof */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-400">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
                 <span className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                   Descarga inmediata
@@ -229,7 +229,7 @@ export default function Landing() {
 
       {/* ── SOCIAL PROOF BAR ─────────────────────────────────── */}
       <div className="border-y border-gray-100 bg-gray-50 py-4 px-4">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-400 font-medium">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-600 font-medium">
           {['🇵🇪 Perú', '🇲🇽 México', '🇨🇴 Colombia', '🇦🇷 Argentina', '🇨🇱 Chile'].map(c => (
             <span key={c}>{c}</span>
           ))}
@@ -323,7 +323,7 @@ export default function Landing() {
 
             {/* Purchase card */}
             <div className="lg:col-span-2">
-              <div className="bg-white border-2 border-primary/20 rounded-2xl p-7 shadow-xl sticky top-24">
+              <div className="bg-white border-2 border-blue-200 rounded-2xl p-7 shadow-xl lg:sticky lg:top-24">
                 <div className="flex flex-wrap gap-2 mb-5">
                   <span className="bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-full border border-green-100">✓ Disponible ahora</span>
                   <span className="bg-orange-50 text-accent text-xs font-bold px-3 py-1 rounded-full border border-orange-100">🚀 Precio de lanzamiento</span>
@@ -421,16 +421,16 @@ export default function Landing() {
                     </svg>
                   ))}
                 </div>
-                <p className="text-gray-600 text-sm leading-relaxed flex-1 mb-5 italic">
+                <p className="text-gray-700 text-sm leading-relaxed flex-1 mb-5 italic">
                   "{t.quote}"
                 </p>
-                <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
                   <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-xs font-bold">{t.initials}</span>
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900 text-sm">{t.name}</div>
-                    <div className="text-gray-400 text-xs">{t.role} · {t.school}</div>
+                    <div className="text-gray-500 text-xs">{t.role} · {t.school}</div>
                   </div>
                 </div>
               </div>
