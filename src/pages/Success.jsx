@@ -5,26 +5,37 @@ import { supabase } from '../lib/supabase.js';
 
 export default function Success() {
   const [searchParams] = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  // Mercado Pago redirige con ?external_reference=PURCHASE_ID&payment_id=xxx&status=approved
+  const purchaseId = searchParams.get('external_reference');
+  const mpStatus = searchParams.get('status');
   const { user } = useAuth();
   const [purchase, setPurchase] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user && sessionId) pollForPurchase();
-    else setLoading(false);
-  }, [user, sessionId]);
+    if (user && purchaseId) {
+      pollForPurchase();
+    } else {
+      setLoading(false);
+    }
+  }, [user, purchaseId]);
 
   const pollForPurchase = async () => {
-    for (let i = 0; i < 5; i++) {
+    // Polling: el webhook de MP puede tardar unos segundos en procesar
+    for (let i = 0; i < 8; i++) {
       const { data } = await supabase
         .from('purchases')
         .select('*, products(name)')
-        .eq('stripe_session_id', sessionId)
+        .eq('id', purchaseId)
+        .eq('user_id', user.id)
         .eq('status', 'completed')
         .maybeSingle();
-      if (data) { setPurchase(data); break; }
-      if (i < 4) await new Promise((r) => setTimeout(r, 2000));
+
+      if (data) {
+        setPurchase(data);
+        break;
+      }
+      if (i < 7) await new Promise((r) => setTimeout(r, 2000));
     }
     setLoading(false);
   };
@@ -49,7 +60,8 @@ export default function Success() {
         <h1 className="text-2xl font-display font-bold text-gray-900 mb-3">¡Compra exitosa!</h1>
         {purchase ? (
           <p className="text-gray-500 mb-2">
-            <span className="font-semibold text-gray-900">{purchase.products.name}</span> ya está disponible en tu dashboard.
+            <span className="font-semibold text-gray-900">{purchase.products.name}</span>{' '}
+            ya está disponible en tu dashboard.
           </p>
         ) : (
           <p className="text-gray-500 mb-2">

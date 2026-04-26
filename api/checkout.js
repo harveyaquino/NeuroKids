@@ -1,94 +1,51 @@
-import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function setCorsHeaders(res, origin) {
-  const allowed = process.env.VITE_APP_URL || '*';
-  res.setHeader('Access-Control-Allow-Origin', origin === allowed ? allowed : allowed);
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-}
-
-async function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', (chunk) => { body += chunk.toString(); });
-    req.on('end', () => resolve(body));
-    req.on('error', reject);
-  });
-}
+const mpClient = new MercadoPagoConfig({
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+});
 
 export default async function handler(req, res) {
-  setCorsHeaders(res, req.headers.origin);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Verify auth token
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   const token = authHeader.split(' ')[1];
 
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user) {
-    return res.status(401).json({ error: 'Token inválido' });
-  }
+  if (authError || !user) return res.status(401).json({ error: 'Token inválido' });
 
-  // Parse body
   let body;
   try {
-    // req.body may already be parsed by Vercel runtime
-    body = typeof req.body === 'object' && req.body !== null
-      ? req.body
-      : JSON.parse(await readBody(req));
+    body = typeof req.body === 'object' && req.body !== null ? req.body : JSON.parse(req.body);
   } catch {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
   const { product_id } = body;
-  if (!product_id) {
-    return res.status(400).json({ error: 'product_id requerido' });
-  }
+  if (!product_id) return res.status(400).json({ error: 'product_id requerido' });
 
   try {
-    // Get user profile
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, email, full_name')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profile) {
-      return res.status(404).json({ error: 'Perfil de usuario no encontrado' });
-    }
-
-    // Get product
-    const { data: product, error: productError } = await supabase
+    const { data: product } = await supabase
       .from('products')
       .select('*')
       .eq('id', product_id)
       .eq('is_active', true)
       .single();
 
-    if (productError || !product) {
-      return res.status(404).json({ error: 'Producto no encontrado o inactivo' });
-    }
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado o inactivo' });
 
-    // Check for existing completed purchase (avoid duplicate charges)
-    const { data: existingPurchase } = await supabase
+    const { data: existing } = await supabase
       .from('purchases')
       .select('id')
       .eq('user_id', user.id)
@@ -96,7 +53,7 @@ export default async function handler(req, res) {
       .eq('status', 'completed')
       .maybeSingle();
 
-    if (existingPurchase) {
+    if (existing) {
       return res.status(400).json({ error: 'Ya tienes este kit. Ve a tu dashboard para descargarlo.' });
     }
 
@@ -117,36 +74,43 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'No se pudo crear el registro de compra' });
     }
 
-    const appUrl = process.env.VITE_APP_URL || `https://${process.env.VERCEL_URL}`;
+    const appUrl =
+      process.env.VITE_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
 
-    // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: product.stripe_price_id,
-          quantity: 1,
+    const preference = new Preference(mpClient);
+    const response = await preference.create({
+      body: {
+        items: [
+          {
+            id: product.id,
+            title: product.name,
+            description: product.description || product.name,
+            quantity: 1,
+            unit_price: product.price / 100, // centavos → soles
+            currency_id: 'PEN',
+          },
+        ],
+        payer: { email: user.email },
+        back_urls: {
+          success: `${appUrl}/success`,
+          failure: `${appUrl}/cancel`,
+          pending: `${appUrl}/success`,
         },
-      ],
-      mode: 'payment',
-      customer_email: profile.email,
-      success_url: `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/cancel`,
-      metadata: {
-        user_id: user.id,
-        product_id,
-        purchase_id: purchase.id,
+        auto_return: 'approved',
+        // external_reference = purchase ID para rastrear en webhook y success page
+        external_reference: purchase.id,
+        notification_url: `${appUrl}/api/webhook`,
       },
-      locale: 'es',
     });
 
-    // Store session ID in purchase
+    // Store MP preference ID
     await supabase
       .from('purchases')
-      .update({ stripe_session_id: session.id })
+      .update({ mp_preference_id: response.id })
       .eq('id', purchase.id);
 
-    return res.status(200).json({ url: session.url });
+    return res.status(200).json({ url: response.init_point });
   } catch (err) {
     console.error('Checkout error:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
