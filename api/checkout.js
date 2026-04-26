@@ -1,15 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-const mpClient = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
-});
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -18,33 +9,64 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  // Verificar variables de entorno requeridas
+  const {
+    VITE_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
+    MERCADOPAGO_ACCESS_TOKEN,
+  } = process.env;
+
+  if (!VITE_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('checkout: faltan variables de Supabase');
+    return res.status(500).json({ error: 'Configuración del servidor incompleta (Supabase)' });
+  }
+  if (!MERCADOPAGO_ACCESS_TOKEN) {
+    console.error('checkout: falta MERCADOPAGO_ACCESS_TOKEN');
+    return res.status(500).json({ error: 'Configuración del servidor incompleta (MercadoPago)' });
+  }
+
+  // Verificar auth
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
   const token = authHeader.split(' ')[1];
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user) return res.status(401).json({ error: 'Token inválido' });
+  const supabase = createClient(VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !user) {
+    return res.status(401).json({ error: 'Token inválido' });
+  }
+
+  // Parsear body
   let body;
   try {
-    body = typeof req.body === 'object' && req.body !== null ? req.body : JSON.parse(req.body);
+    body = typeof req.body === 'object' && req.body !== null
+      ? req.body
+      : JSON.parse(req.body || '{}');
   } catch {
-    return res.status(400).json({ error: 'Invalid JSON body' });
+    return res.status(400).json({ error: 'JSON inválido' });
   }
 
   const { product_id } = body;
   if (!product_id) return res.status(400).json({ error: 'product_id requerido' });
 
   try {
-    const { data: product } = await supabase
+    // Buscar producto
+    const { data: product, error: productError } = await supabase
       .from('products')
       .select('*')
       .eq('id', product_id)
       .eq('is_active', true)
       .single();
 
-    if (!product) return res.status(404).json({ error: 'Producto no encontrado o inactivo' });
+    if (productError || !product) {
+      console.error('checkout: producto no encontrado', productError);
+      return res.status(404).json({ error: 'Producto no encontrado o inactivo' });
+    }
 
+    // Verificar compra duplicada
     const { data: existing } = await supabase
       .from('purchases')
       .select('id')
@@ -57,62 +79,63 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Ya tienes este kit. Ve a tu dashboard para descargarlo.' });
     }
 
-    // Create pending purchase record
+    // Crear registro pending
     const { data: purchase, error: purchaseError } = await supabase
       .from('purchases')
       .insert({
-        user_id: user.id,
+        user_id:     user.id,
         product_id,
-        status: 'pending',
+        status:      'pending',
         amount_paid: product.price,
       })
       .select()
       .single();
 
     if (purchaseError) {
-      console.error('Purchase insert error:', purchaseError);
-      return res.status(500).json({ error: 'No se pudo crear el registro de compra' });
+      console.error('checkout: error insertando purchase', purchaseError);
+      return res.status(500).json({ error: 'No se pudo registrar la compra' });
     }
 
     const appUrl =
       process.env.VITE_APP_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
 
+    // Crear preferencia en Mercado Pago
+    const mpClient = new MercadoPagoConfig({ accessToken: MERCADOPAGO_ACCESS_TOKEN });
     const preference = new Preference(mpClient);
-    const response = await preference.create({
+
+    const mpResponse = await preference.create({
       body: {
-        items: [
-          {
-            id: product.id,
-            title: product.name,
-            description: product.description || product.name,
-            quantity: 1,
-            unit_price: product.price / 100, // centavos → soles
-            currency_id: 'PEN',
-          },
-        ],
-        payer: { email: user.email },
-        back_urls: {
+        items: [{
+          id:          product.id,
+          title:       product.name,
+          description: product.description || product.name,
+          quantity:    1,
+          unit_price:  product.price / 100,   // centavos → soles
+          currency_id: 'PEN',
+        }],
+        payer:              { email: user.email },
+        back_urls:          {
           success: `${appUrl}/success`,
           failure: `${appUrl}/cancel`,
           pending: `${appUrl}/success`,
         },
-        auto_return: 'approved',
-        // external_reference = purchase ID para rastrear en webhook y success page
-        external_reference: purchase.id,
-        notification_url: `${appUrl}/api/webhook`,
+        auto_return:        'approved',
+        external_reference: purchase.id,       // lo usamos en webhook y success page
+        notification_url:   `${appUrl}/api/webhook`,
       },
     });
 
-    // Store MP preference ID
+    // Guardar preference ID
     await supabase
       .from('purchases')
-      .update({ mp_preference_id: response.id })
+      .update({ mp_preference_id: mpResponse.id })
       .eq('id', purchase.id);
 
-    return res.status(200).json({ url: response.init_point });
+    return res.status(200).json({ url: mpResponse.init_point });
+
   } catch (err) {
-    console.error('Checkout error:', err);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('checkout error:', err?.message || err);
+    return res.status(500).json({ error: 'Error interno. Inténtalo de nuevo.' });
   }
 }
