@@ -197,17 +197,21 @@ export default function Landing() {
     kit1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   const handleCheckout = async (productId) => {
-    if (!productId) return;
-    if (!user) { navigate(`/login?redirect=checkout&product_id=${productId}`); return; }
-    if (!isEmailVerified()) {
-      setCheckoutError('Verifica tu email antes de comprar. Revisa tu bandeja de entrada.');
-      kit1Ref.current?.scrollIntoView({ behavior: 'smooth' });
+    setCheckoutError('');
+    if (!user) {
+      navigate(productId
+        ? `/login?redirect=checkout&product_id=${productId}`
+        : '/login');
+      return;
+    }
+    if (!productId) {
+      setCheckoutError('No se pudo cargar el producto. Recarga la página e inténtalo de nuevo.');
       return;
     }
     setCheckoutLoading(true);
-    setCheckoutError('');
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { navigate('/login'); return; }
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
@@ -388,13 +392,16 @@ export default function Landing() {
                 </div>
                 <p className="text-green-600 text-sm font-semibold mb-7">Ahorras S/ 30 en precio de lanzamiento</p>
                 <button
-                  onClick={() => kit1Data && handleCheckout(kit1Data.productId)}
-                  disabled={checkoutLoading || !kit1}
+                  onClick={() => handleCheckout(kit1?.id)}
+                  disabled={checkoutLoading}
                   className="btn-primary w-full text-base py-4 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
                 >
                   {checkoutLoading ? (
-                    <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" /> Procesando...</>
-                  ) : !kit1 ? 'Cargando...' : '🛒  Comprar ahora — S/ 49'}
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
+                      Procesando...
+                    </span>
+                  ) : '🛒  Comprar ahora — S/ 49'}
                 </button>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-500 border-t border-gray-100 pt-4">
                   <div className="flex flex-col items-center gap-1"><span className="text-lg">🔒</span>Pago seguro</div>
@@ -451,8 +458,8 @@ export default function Landing() {
                 ))}
               </div>
               <button
-                onClick={() => kit1Data && handleCheckout(kit1Data.productId)}
-                disabled={checkoutLoading || !kit1}
+                onClick={() => handleCheckout(kit1?.id)}
+                disabled={checkoutLoading}
                 className="btn-accent py-4 px-8 text-base disabled:opacity-60"
               >
                 🛒 Comprar Kit para casa — S/ 49
@@ -606,7 +613,7 @@ export default function Landing() {
             Únete a los docentes que ya están preparando a sus alumnos para el futuro.
           </p>
           <button
-            onClick={() => kit1Data ? handleCheckout(kit1Data.productId) : scrollToKit()}
+            onClick={() => handleCheckout(kit1?.id)}
             disabled={checkoutLoading}
             className="bg-white hover:bg-gray-50 text-primary font-bold text-lg py-4 px-12 rounded-xl transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] disabled:opacity-60 cursor-pointer"
           >

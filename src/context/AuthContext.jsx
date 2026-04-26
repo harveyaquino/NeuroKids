@@ -1,94 +1,76 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  // undefined = inicializando, null = sin sesión, objeto = con sesión
+  const [user, setUser]       = useState(undefined);
   const [profile, setProfile] = useState(null);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const activatedUserId       = useRef(null);
 
   useEffect(() => {
-    // Fallback: si onAuthStateChange nunca dispara (red caída, etc.), desbloquear UI
-    const fallback = setTimeout(() => setLoading(false), 5000);
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        clearTimeout(fallback);
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          await fetchProfile(session.user.id);
+      (event, session) => {
+        const u = session?.user ?? null;
+        activatedUserId.current = u?.id ?? null;
+        setUser(u);
+        if (u) {
+          loadProfile(u.id);
         } else {
           setProfile(null);
-          setLoading(false);
         }
       }
     );
-
-    return () => {
-      clearTimeout(fallback);
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId) => {
+  async function loadProfile(userId) {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
+        .maybeSingle();
+
+      if (activatedUserId.current !== userId) return; // ya cambió de usuario
+
+      if (data) {
+        setProfile(data);
+        return;
+      }
+
+      // El perfil no existe aún — créalo
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user || activatedUserId.current !== userId) return;
+
+      const { data: newProfile } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userId,
+          email: authData.user.email,
+          full_name:
+            authData.user.user_metadata?.full_name ||
+            authData.user.user_metadata?.name ||
+            '',
+          role: 'user',
+        })
+        .select()
         .single();
 
-      if (error && error.code === 'PGRST116') {
-        // Profile not created yet by trigger — create it manually
-        const { data: authUser } = await supabase.auth.getUser();
-        const { data: newProfile } = await supabase
-          .from('profiles')
-          .insert({
-            id: userId,
-            email: authUser.user.email,
-            full_name:
-              authUser.user.user_metadata?.full_name ||
-              authUser.user.user_metadata?.name ||
-              '',
-            role: 'user',
-          })
-          .select()
-          .single();
-        setProfile(newProfile);
-      } else if (!error) {
-        setProfile(data);
-      }
+      if (activatedUserId.current === userId) setProfile(newProfile);
     } catch (err) {
-      console.error('Error fetching profile:', err);
-    } finally {
-      setLoading(false);
+      console.error('loadProfile:', err);
     }
-  };
+  }
 
-  const signInWithGoogle = async (customRedirectTo) => {
-    const redirectTo =
-      customRedirectTo || `${window.location.origin}/dashboard`;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo },
-    });
-    if (error) throw error;
-  };
-
-  const signInWithEmail = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  async function signInWithEmail(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
-  };
+  }
 
-  const signUpWithEmail = async (email, password, fullName) => {
+  async function signUpWithEmail(email, password, fullName) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -99,31 +81,34 @@ export function AuthProvider({ children }) {
     });
     if (error) throw error;
     return data;
-  };
+  }
 
-  const signOut = () => {
+  async function signInWithGoogle(redirectTo) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: redirectTo || `${window.location.origin}/dashboard` },
+    });
+    if (error) throw error;
+  }
+
+  function signOut() {
+    activatedUserId.current = null;
     setUser(null);
     setProfile(null);
-    setSession(null);
-    // scope:'local' borra el token de localStorage sincrónicamente sin llamada de red,
-    // cortando cualquier race condition con TOKEN_REFRESHED en vuelo
     supabase.auth.signOut({ scope: 'local' }).catch(console.error);
-  };
-
-  const isEmailVerified = () => user?.email_confirmed_at != null;
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user:            user === undefined ? null : user,
         profile,
-        session,
-        loading,
-        signInWithGoogle,
+        loading:         user === undefined,
         signInWithEmail,
         signUpWithEmail,
+        signInWithGoogle,
         signOut,
-        isEmailVerified,
+        isEmailVerified: () => !!(user?.email_confirmed_at),
       }}
     >
       {children}
@@ -131,8 +116,8 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
-  return context;
-};
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth debe usarse dentro de AuthProvider');
+  return ctx;
+}
