@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase.js';
 import FAQ from '../components/FAQ.jsx';
 import KitCard from '../components/KitCard.jsx';
 
-/* ─── Data ─────────────────────────────────────────────── */
+/* ─── Static data ───────────────────────────────────────── */
 const BENEFITS = [
   { icon: '📵', title: 'Sin pantallas', desc: 'Todo en papel. Los niños aprenden IA tocando, armando y jugando.' },
   { icon: '🖨️', title: 'Listo para imprimir', desc: 'Descarga el PDF y en 20 minutos tienes el kit armado.' },
@@ -14,84 +14,80 @@ const BENEFITS = [
 ];
 
 const KIT_CONTENTS = [
-  { icon: '🗺️', item: 'Tablero de contexto armable', color: 'bg-blue-50 text-blue-600' },
-  { icon: '🃏', item: '60 fichas de tokens recortables', color: 'bg-purple-50 text-purple-600' },
-  { icon: '🎡', item: 'Rueda de probabilidad giratoria', color: 'bg-green-50 text-green-600' },
+  { icon: '🗺️', item: 'Tablero de contexto armable',         color: 'bg-blue-50   text-blue-600'   },
+  { icon: '🃏', item: '60 fichas de tokens recortables',      color: 'bg-purple-50 text-purple-600' },
+  { icon: '🎡', item: 'Rueda de probabilidad giratoria',      color: 'bg-green-50  text-green-600'  },
   { icon: '🌡️', item: 'Dial de temperatura PRECISO ↔ CREATIVO', color: 'bg-orange-50 text-orange-600' },
-  { icon: '🪟', item: 'Ventana de contexto deslizable', color: 'bg-sky-50 text-sky-600' },
-  { icon: '🎯', item: '10 tarjetas de misión', color: 'bg-rose-50 text-rose-600' },
-  { icon: '📖', item: 'Guía docente: 3 sesiones de 45 min', color: 'bg-amber-50 text-amber-600' },
+  { icon: '🪟', item: 'Ventana de contexto deslizable',       color: 'bg-sky-50    text-sky-600'    },
+  { icon: '🎯', item: '10 tarjetas de misión',                color: 'bg-rose-50   text-rose-600'   },
+  { icon: '📖', item: 'Guía docente: 3 sesiones de 45 min',  color: 'bg-amber-50  text-amber-600'  },
 ];
 
 const COMING_SOON = [
-  { number: 2, name: 'Háblale bien a la IA', description: 'Prompt engineering para niños. Aprende a formular las preguntas correctas.', icon: '💬', available: false },
-  { number: 3, name: 'La IA que imagina', description: 'Cómo las IAs generan imágenes. Difusión, espacio latente y creatividad.', icon: '🎨', available: false },
-  { number: 4, name: 'Cuando la IA se equivoca', description: 'Sesgos, alucinaciones y pensamiento crítico frente a la IA.', icon: '🔍', available: false },
-];
-
-const TESTIMONIALS = [
-  { name: 'Carmen Villanueva', role: 'Docente de 5to primaria', school: 'I.E. San Martín de Porres, Lima', quote: 'Mis alumnos nunca habían prestado tanta atención. Entendieron cómo "recuerda" la IA en menos de 10 minutos con el tablero de contexto.', initials: 'CV' },
-  { name: 'Roberto Quispe', role: 'Coordinador STEM', school: 'Colegio Los Álamos, Arequipa', quote: 'Lo implementamos en el taller extracurricular. Los niños de 8 años explicaron tokens a sus papás en casa. Eso no tiene precio.', initials: 'RQ' },
-  { name: 'Lucía Mendoza', role: 'Docente de Ciencias', school: 'I.E. Rosa de Lima, Trujillo', quote: 'Sin conocer nada de IA lo pude facilitar perfectamente. La guía docente es clarísima y el material tiene un diseño muy cuidado.', initials: 'LM' },
+  { number: 2, name: 'Háblale bien a la IA',       description: 'Prompt engineering para niños. Aprende a formular las preguntas correctas.',       icon: '💬', available: false },
+  { number: 3, name: 'La IA que imagina',           description: 'Cómo las IAs generan imágenes. Difusión, espacio latente y creatividad.',           icon: '🎨', available: false },
+  { number: 4, name: 'Cuando la IA se equivoca',    description: 'Sesgos, alucinaciones y pensamiento crítico frente a la IA.',                       icon: '🔍', available: false },
 ];
 
 const AUDIENCES = [
-  { icon: '🏫', title: 'Docentes de primaria', desc: 'Cualquier área que quiera incorporar pensamiento computacional sin código.' },
-  { icon: '🔬', title: 'Colegios STEM', desc: 'Programas de ciencia y tecnología que buscan contenido actualizado.' },
-  { icon: '🎒', title: 'Talleres extracurriculares', desc: 'Clubes de tecnología y robótica para edades 6–12.' },
+  { icon: '🏫', title: 'Docentes de primaria',       desc: 'Cualquier área que quiera incorporar IA en el aula sin necesitar ser experto en tecnología.' },
+  { icon: '🔬', title: 'Colegios y programas STEM',  desc: 'Instituciones que buscan contenido de IA actualizado, práctico y alineado al currículo.' },
+  { icon: '👨‍👩‍👧', title: 'Padres y familias',         desc: 'Para explorar la IA juntos en casa. Sin pantallas, solo conversación, juego y aprendizaje real.' },
+  { icon: '🎒', title: 'Talleres extracurriculares', desc: 'Clubes de tecnología, robótica y ciencias para niños de 6 a 12 años.' },
 ];
 
-/* ─── Kit Visual Mockup ─────────────────────────────────── */
+const TESTIMONIALS = [
+  { name: 'Carmen Villanueva', role: 'Docente de 5to primaria',  school: 'I.E. San Martín de Porres, Lima',    quote: 'Mis alumnos nunca habían prestado tanta atención. Entendieron cómo "recuerda" la IA en menos de 10 minutos con el tablero de contexto.', initials: 'CV' },
+  { name: 'Roberto Quispe',    role: 'Coordinador STEM',         school: 'Colegio Los Álamos, Arequipa',       quote: 'Lo implementamos en el taller extracurricular. Los niños de 8 años explicaron tokens a sus papás en casa. Eso no tiene precio.',            initials: 'RQ' },
+  { name: 'Lucía Mendoza',     role: 'Docente de Ciencias',      school: 'I.E. Rosa de Lima, Trujillo',        quote: 'Sin conocer nada de IA lo pude facilitar perfectamente. La guía docente es clarísima y el material tiene un diseño muy cuidado.',           initials: 'LM' },
+];
+
+const FAMILY_BENEFITS = [
+  { icon: '🏠', title: 'En casa, en 45 minutos', desc: 'Sin preparación previa. Abres el kit, imprimes y empiezas.' },
+  { icon: '🎲', title: 'Aprenden jugando', desc: 'Actividades manuales que mantienen a los niños 100% comprometidos.' },
+  { icon: '🗣️', title: 'Conversaciones reales', desc: 'El kit abre diálogos sobre tecnología que conectan a padres e hijos.' },
+  { icon: '🧠', title: 'Ventaja para su futuro', desc: 'Entienden la IA desde pequeños, cuando el mundo la da por sentada.' },
+];
+
+/* ─── Kit mockup visual ─────────────────────────────────── */
 function KitMockup() {
   return (
     <div className="relative max-w-sm mx-auto lg:mx-0">
-      {/* Decorative cards behind */}
-      <div className="absolute inset-0 bg-blue-100 rounded-3xl rotate-3 scale-[0.97]" />
-      <div className="absolute inset-0 bg-orange-50 rounded-3xl -rotate-2 scale-[0.99]" />
-
-      {/* Main card */}
+      <div className="absolute inset-0 bg-blue-100  rounded-3xl rotate-3   scale-[0.97]" />
+      <div className="absolute inset-0 bg-orange-50 rounded-3xl -rotate-2  scale-[0.99]" />
       <div className="relative bg-white rounded-3xl shadow-2xl p-7 border border-gray-100">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
             <span className="text-xl">🧠</span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-display font-bold text-gray-900 text-sm">Así piensa la IA</div>
-            <div className="text-gray-400 text-xs">Kit #1 — NeuroKids</div>
+            <div className="text-gray-500 text-xs">Kit #1 — NeuroKids</div>
           </div>
-          <div className="bg-accent text-white text-sm font-bold px-3 py-1.5 rounded-full shrink-0">
-            S/ 49
-          </div>
+          <div className="bg-accent text-white text-sm font-bold px-3 py-1.5 rounded-full shrink-0">S/ 49</div>
         </div>
-
-        {/* Contents grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {[
-            { icon: '🃏', label: '60 fichas de tokens', bg: 'bg-blue-50' },
-            { icon: '🎡', label: 'Rueda de probabilidad', bg: 'bg-purple-50' },
-            { icon: '🌡️', label: 'Dial temperatura', bg: 'bg-orange-50' },
-            { icon: '🗺️', label: 'Tablero de contexto', bg: 'bg-green-50' },
+            { icon: '🃏', label: '60 fichas de tokens',   bg: 'bg-blue-50'   },
+            { icon: '🎡', label: 'Rueda probabilidad',    bg: 'bg-purple-50' },
+            { icon: '🌡️', label: 'Dial temperatura',      bg: 'bg-orange-50' },
+            { icon: '🗺️', label: 'Tablero contexto',      bg: 'bg-green-50'  },
           ].map((item) => (
             <div key={item.label} className={`${item.bg} rounded-xl p-3 flex flex-col items-center text-center`}>
               <span className="text-2xl mb-1">{item.icon}</span>
-              <span className="text-xs text-gray-600 font-medium leading-tight">{item.label}</span>
+              <span className="text-xs text-gray-700 font-medium leading-tight">{item.label}</span>
             </div>
           ))}
         </div>
-
-        {/* Guide row */}
         <div className="bg-gray-50 rounded-xl px-4 py-3 flex items-center gap-3">
           <span className="text-xl">📖</span>
           <div>
             <div className="text-xs font-bold text-gray-900">Guía Docente completa</div>
-            <div className="text-xs text-gray-400">3 sesiones · 45 min cada una</div>
+            <div className="text-xs text-gray-500">3 sesiones · 45 min cada una</div>
           </div>
-          <span className="ml-auto text-green-500 font-bold text-xs bg-green-50 px-2 py-1 rounded-full">Incluida</span>
+          <span className="ml-auto text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded-full">Incluida</span>
         </div>
       </div>
-
-      {/* Floating badge */}
       <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl px-4 py-3 border border-gray-100 flex items-center gap-2.5">
         <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
           <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,20 +96,89 @@ function KitMockup() {
         </div>
         <div>
           <div className="text-xs font-bold text-gray-900">Descarga inmediata</div>
-          <div className="text-xs text-gray-400">Listo en 20 min</div>
+          <div className="text-xs text-gray-500">Listo en 20 min</div>
         </div>
       </div>
     </div>
   );
 }
 
+/* ─── Waitlist form ─────────────────────────────────────── */
+function WaitlistForm() {
+  const [email, setEmail]     = useState('');
+  const [type, setType]       = useState('docente');
+  const [loading, setLoading] = useState(false);
+  const [done, setDone]       = useState(false);
+  const [error, setError]     = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const { error: dbError } = await supabase
+        .from('waitlist')
+        .insert({ email, type });
+      if (dbError) throw dbError;
+      setDone(true);
+    } catch {
+      setError('Ocurrió un error. Inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-4">
+        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+          <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p className="text-white font-semibold text-lg">¡Listo! Te avisamos primero.</p>
+        <p className="text-blue-200 text-sm">Revisa tu bandeja de entrada.</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        placeholder="tu@email.com"
+        className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-white focus:bg-white/20 transition-all"
+      />
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value)}
+        className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:border-white transition-all cursor-pointer"
+      >
+        <option value="docente"  className="text-gray-900">Soy docente</option>
+        <option value="familia"  className="text-gray-900">Soy padre/madre</option>
+      </select>
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-white hover:bg-gray-100 text-primary font-bold px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-60 whitespace-nowrap"
+      >
+        {loading ? 'Enviando...' : 'Unirme →'}
+      </button>
+      {error && <p className="text-red-300 text-sm w-full sm:col-span-3">{error}</p>}
+    </form>
+  );
+}
+
 /* ─── Page ──────────────────────────────────────────────── */
 export default function Landing() {
   const { user, isEmailVerified } = useAuth();
-  const navigate = useNavigate();
-  const kit1Ref = useRef(null);
+  const navigate  = useNavigate();
+  const kit1Ref   = useRef(null);
 
-  const [kit1, setKit1] = useState(null);
+  const [kit1, setKit1]                   = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
 
@@ -168,14 +233,12 @@ export default function Landing() {
     <div className="bg-white">
 
       {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="pt-20 pb-14 sm:pt-28 sm:pb-20 px-4 overflow-hidden">
-        {/* Background sólido sin transparencias */}
+      <section className="pt-20 pb-14 sm:pt-28 sm:pb-20 px-4 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50 pointer-events-none" style={{ height: '85vh' }} />
-
         <div className="max-w-6xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
 
-            {/* Left — text */}
+            {/* Texto */}
             <div>
               <div className="inline-flex items-center gap-2 bg-primary-light text-primary-dark text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-blue-200">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -183,14 +246,13 @@ export default function Landing() {
               </div>
 
               <h1 className="font-display font-black text-4xl sm:text-5xl text-gray-900 leading-[1.1] mb-5">
-                Enseña{' '}
-                <span className="text-primary">Inteligencia Artificial</span>
-                {' '}con tus manos
+                Tus alumnos ya usan IA.{' '}
+                <span className="text-primary">¿Sabes cómo enseñarles a entenderla?</span>
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg">
-                Kits imprimibles para que tus alumnos entiendan cómo piensa la IA —
-                sin pantallas, sin código, solo aprendizaje real.
+                Kits imprimibles para enseñar IA generativa a niños de 6 a 12 años.
+                Sin pantallas, sin código, listo para usar mañana.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
@@ -202,24 +264,19 @@ export default function Landing() {
                 </button>
               </div>
 
-              {/* Social proof */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                  Descarga inmediata
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                  Pago 100% seguro
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                  Garantía 30 días
-                </span>
+                {['Descarga inmediata', 'Pago 100% seguro', 'Garantía 30 días'].map((item) => (
+                  <span key={item} className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    {item}
+                  </span>
+                ))}
               </div>
             </div>
 
-            {/* Right — kit mockup */}
+            {/* Mockup */}
             <div className="lg:pl-8">
               <KitMockup />
             </div>
@@ -227,8 +284,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF BAR ─────────────────────────────────── */}
-      <div className="border-y border-gray-100 bg-gray-50 py-4 px-4">
+      {/* ── PAÍSES ───────────────────────────────────────────── */}
+      <div className="border-y border-gray-200 bg-gray-50 py-4 px-4">
         <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-600 font-medium">
           {['🇵🇪 Perú', '🇲🇽 México', '🇨🇴 Colombia', '🇦🇷 Argentina', '🇨🇱 Chile'].map(c => (
             <span key={c}>{c}</span>
@@ -245,14 +302,14 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              { icon: '🌐', title: 'La IA es el tema del siglo pero nadie la enseña en las aulas', desc: 'El 94% de docentes peruanos no ha recibido capacitación en IA para el aula.' },
-              { icon: '💻', title: 'Los recursos existentes son pantallas o demasiado técnicos', desc: 'Todo requiere internet, dispositivos o conocimientos de programación.' },
-              { icon: '🗺️', title: 'Los docentes no saben por dónde empezar', desc: 'No hay materiales adaptados al currículo peruano ni a edades de primaria.' },
+              { icon: '🌐', title: 'La IA es el tema del siglo pero nadie la enseña en las aulas', desc: 'El 94% de docentes no ha recibido capacitación en IA para el aula.' },
+              { icon: '💻', title: 'Los recursos existentes son pantallas o demasiado técnicos',  desc: 'Todo requiere internet, dispositivos o conocimientos de programación.' },
+              { icon: '🗺️', title: 'Los docentes no saben por dónde empezar',                     desc: 'No hay materiales adaptados al currículo latinoamericano ni a edades de primaria.' },
             ].map((p) => (
               <div key={p.title} className="bg-red-50 border border-red-100 rounded-2xl p-6">
                 <div className="text-3xl mb-4">{p.icon}</div>
                 <h3 className="font-display font-bold text-gray-900 text-base mb-2">{p.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{p.desc}</p>
               </div>
             ))}
           </div>
@@ -272,12 +329,10 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {BENEFITS.map((b) => (
-              <div key={b.title} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-                <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center text-2xl mb-4">
-                  {b.icon}
-                </div>
+              <div key={b.title} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center text-2xl mb-4">{b.icon}</div>
                 <h3 className="font-display font-bold text-gray-900 mb-2">{b.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{b.desc}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{b.desc}</p>
               </div>
             ))}
           </div>
@@ -303,15 +358,12 @@ export default function Landing() {
           )}
 
           <div className="grid lg:grid-cols-5 gap-10 items-start">
-            {/* Contents list */}
             <div className="lg:col-span-3">
               <h3 className="font-display font-bold text-gray-900 text-xl mb-5">¿Qué incluye?</h3>
               <div className="space-y-3">
                 {KIT_CONTENTS.map((c) => (
-                  <div key={c.item} className="flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all">
-                    <div className={`w-10 h-10 ${c.color} rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>
-                      {c.icon}
-                    </div>
+                  <div key={c.item} className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all">
+                    <div className={`w-10 h-10 ${c.color} rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>{c.icon}</div>
                     <span className="text-gray-800 font-medium text-sm">{c.item}</span>
                     <svg className="ml-auto w-5 h-5 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -325,21 +377,16 @@ export default function Landing() {
             <div className="lg:col-span-2">
               <div className="bg-white border-2 border-blue-200 rounded-2xl p-7 shadow-xl lg:sticky lg:top-24">
                 <div className="flex flex-wrap gap-2 mb-5">
-                  <span className="bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-full border border-green-100">✓ Disponible ahora</span>
-                  <span className="bg-orange-50 text-accent text-xs font-bold px-3 py-1 rounded-full border border-orange-100">🚀 Precio de lanzamiento</span>
+                  <span className="bg-green-50 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200">✓ Disponible ahora</span>
+                  <span className="bg-orange-50 text-accent text-xs font-bold px-3 py-1 rounded-full border border-orange-200">🚀 Precio de lanzamiento</span>
                 </div>
-
                 <h3 className="font-display font-bold text-gray-900 text-xl mb-1">Kit #1: Así piensa la IA</h3>
-                <p className="text-gray-500 text-sm mb-6">Para niños 6–12 años · Imprimible · 3 sesiones</p>
-
+                <p className="text-gray-600 text-sm mb-6">Para niños 6–12 años · Imprimible · 3 sesiones</p>
                 <div className="flex items-baseline gap-3 mb-1">
                   <span className="text-5xl font-display font-black text-gray-900">S/ 49</span>
                   <span className="text-gray-400 line-through text-xl">S/ 79</span>
                 </div>
-                <p className="text-green-600 text-sm font-semibold mb-7">
-                  Ahorras S/ 30 en precio de lanzamiento
-                </p>
-
+                <p className="text-green-600 text-sm font-semibold mb-7">Ahorras S/ 30 en precio de lanzamiento</p>
                 <button
                   onClick={() => kit1Data && handleCheckout(kit1Data.productId)}
                   disabled={checkoutLoading || !kit1}
@@ -349,17 +396,10 @@ export default function Landing() {
                     <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" /> Procesando...</>
                   ) : !kit1 ? 'Cargando...' : '🛒  Comprar ahora — S/ 49'}
                 </button>
-
-                <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-400 border-t border-gray-100 pt-4">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg">🔒</span>Pago seguro
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg">⚡</span>Descarga inmediata
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg">↩️</span>30 días garantía
-                  </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-500 border-t border-gray-100 pt-4">
+                  <div className="flex flex-col items-center gap-1"><span className="text-lg">🔒</span>Pago seguro</div>
+                  <div className="flex flex-col items-center gap-1"><span className="text-lg">⚡</span>Descarga inmediata</div>
+                  <div className="flex flex-col items-center gap-1"><span className="text-lg">↩️</span>30 días garantía</div>
                 </div>
               </div>
             </div>
@@ -373,9 +413,7 @@ export default function Landing() {
           <div className="text-center mb-12">
             <p className="section-label mb-3">Colección completa</p>
             <h2 className="section-title">La línea NeuroKids</h2>
-            <p className="section-subtitle max-w-xl mx-auto">
-              Una secuencia pedagógica completa para cubrir IA generativa de principio a fin.
-            </p>
+            <p className="section-subtitle max-w-xl mx-auto">Una secuencia pedagógica completa para cubrir IA generativa de principio a fin.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {kit1Data && <KitCard kit={kit1Data} onBuy={handleCheckout} loading={checkoutLoading} />}
@@ -384,19 +422,82 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── PARA QUIÉN ───────────────────────────────────────── */}
+      {/* ── PARA FAMILIAS ────────────────────────────────────── */}
       <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Texto */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-orange-200">
+                👨‍👩‍👧 También para familias
+              </div>
+              <h2 className="section-title mb-4">
+                ¿Tu hijo ya usa IA pero no sabe cómo funciona?
+              </h2>
+              <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                El Kit #1 no es solo para el aula. En casa, en 45 minutos,
+                puedes explorar la IA junto a tus hijos — sin pantallas,
+                sin necesitar ser experto en tecnología.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                {FAMILY_BENEFITS.map((b) => (
+                  <div key={b.title} className="flex gap-3">
+                    <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-xl flex-shrink-0">{b.icon}</div>
+                    <div>
+                      <div className="font-semibold text-gray-900 text-sm">{b.title}</div>
+                      <div className="text-gray-600 text-xs mt-0.5 leading-relaxed">{b.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => kit1Data && handleCheckout(kit1Data.productId)}
+                disabled={checkoutLoading || !kit1}
+                className="btn-accent py-4 px-8 text-base disabled:opacity-60"
+              >
+                🛒 Comprar Kit para casa — S/ 49
+              </button>
+            </div>
+
+            {/* Visual */}
+            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-8 border border-orange-100">
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-3">👨‍👩‍👧‍👦</div>
+                <h3 className="font-display font-bold text-gray-900 text-lg">Una tarde diferente en familia</h3>
+                <p className="text-gray-600 text-sm mt-1">Sin tablets, sin distracciones, solo aprendizaje real</p>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { time: '0 min',  text: 'Imprimen y recortan las fichas juntos', icon: '✂️' },
+                  { time: '15 min', text: 'Arman el tablero de contexto',           icon: '🗺️' },
+                  { time: '30 min', text: 'Juegan con la rueda de probabilidad',    icon: '🎡' },
+                  { time: '45 min', text: '"Papá, ¡entiendo cómo piensa ChatGPT!"', icon: '🧠' },
+                ].map((step) => (
+                  <div key={step.time} className="flex items-center gap-4 bg-white rounded-xl px-4 py-3 shadow-sm">
+                    <span className="text-xs font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded-lg w-14 text-center flex-shrink-0">{step.time}</span>
+                    <span className="text-lg">{step.icon}</span>
+                    <span className="text-sm text-gray-700 font-medium">{step.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PARA QUIÉN ES ────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">Audiencia</p>
             <h2 className="section-title">¿Para quién es NeuroKids?</h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {AUDIENCES.map((a) => (
-              <div key={a.title} className="text-center p-8 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+              <div key={a.title} className="text-center p-7 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
                 <div className="text-4xl mb-4">{a.icon}</div>
-                <h3 className="font-display font-bold text-gray-900 mb-2">{a.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{a.desc}</p>
+                <h3 className="font-display font-bold text-gray-900 mb-2 text-base">{a.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{a.desc}</p>
               </div>
             ))}
           </div>
@@ -404,7 +505,7 @@ export default function Landing() {
       </section>
 
       {/* ── TESTIMONIOS ──────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">Testimonios</p>
@@ -412,8 +513,7 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col">
-                {/* Stars */}
+              <div key={t.name} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col">
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <svg key={i} className="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20">
@@ -421,9 +521,7 @@ export default function Landing() {
                     </svg>
                   ))}
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed flex-1 mb-5 italic">
-                  "{t.quote}"
-                </p>
+                <p className="text-gray-700 text-sm leading-relaxed flex-1 mb-5 italic">"{t.quote}"</p>
                 <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
                   <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-xs font-bold">{t.initials}</span>
@@ -436,6 +534,54 @@ export default function Landing() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── TALLERES ─────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-gray-900">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 text-white text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-white/20">
+            🗓️ Próximamente
+          </div>
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-white mb-4 leading-tight">
+            Talleres NeuroKids
+          </h2>
+          <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
+            Sesiones en vivo donde docentes aprenden a facilitar el kit
+            y los niños viven la experiencia completa — presencial y online.
+          </p>
+
+          {/* Dos tipos de taller */}
+          <div className="grid sm:grid-cols-2 gap-5 mb-10">
+            {[
+              {
+                icon: '👩‍🏫',
+                title: 'Para docentes',
+                desc: 'Aprende a llevar las 3 sesiones del Kit #1 en tu aula. Resolución de dudas, adaptaciones por edad y estrategias de facilitación.',
+                tag: 'Formación docente',
+                color: 'border-blue-500/30 bg-blue-500/10',
+              },
+              {
+                icon: '👧',
+                title: 'Para niños',
+                desc: 'Taller donde los niños viven la experiencia NeuroKids en grupo, guiados por un facilitador. Edades 6–12 años.',
+                tag: 'Taller para niños',
+                color: 'border-orange-500/30 bg-orange-500/10',
+              },
+            ].map((t) => (
+              <div key={t.title} className={`border ${t.color} rounded-2xl p-6 text-left`}>
+                <div className="text-4xl mb-4">{t.icon}</div>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t.tag}</span>
+                <h3 className="font-display font-bold text-white text-lg mt-1 mb-2">{t.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{t.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-gray-400 mb-6">
+            Sé de los primeros en enterarte cuando lancemos fechas y precios.
+          </p>
+          <WaitlistForm />
         </div>
       </section>
 
@@ -466,9 +612,7 @@ export default function Landing() {
           >
             {checkoutLoading ? 'Procesando...' : 'Comprar Kit #1 — S/ 49 →'}
           </button>
-          <p className="text-blue-200 text-sm mt-4">
-            Precio de lanzamiento · Descarga inmediata · Garantía 30 días
-          </p>
+          <p className="text-blue-200 text-sm mt-4">Precio de lanzamiento · Descarga inmediata · Garantía 30 días</p>
         </div>
       </section>
 
@@ -480,17 +624,11 @@ export default function Landing() {
               <span className="text-white font-bold text-xs">NK</span>
             </div>
             <span className="font-display font-bold text-white">NeuroKids</span>
-            <span className="text-gray-500 text-sm">— Aprende IA como nunca lo imaginaste</span>
+            <span className="text-gray-500 text-sm hidden sm:inline">— Aprende IA como nunca lo imaginaste</span>
           </div>
           <div className="flex items-center gap-4 text-gray-500 text-sm">
-            <span>
-              Creado por{' '}
-              <a
-                href="https://www.linkedin.com/in/harveyaquinomas/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
+            <span>Creado por{' '}
+              <a href="https://www.linkedin.com/in/harveyaquinomas/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors">
                 Harvey Aquino
               </a>
             </span>

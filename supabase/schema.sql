@@ -174,6 +174,37 @@ CREATE POLICY "kit_pdfs_select_purchased"
   );
 
 -- =========================================================
+-- TABLA: waitlist (lista de espera para talleres)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS public.waitlist (
+  id         UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  email      TEXT NOT NULL,
+  type       TEXT NOT NULL DEFAULT 'docente'
+               CHECK (type IN ('docente', 'familia')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS waitlist_email_idx ON public.waitlist(email);
+
+ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+
+-- Cualquier visitante puede unirse a la lista (sin auth)
+CREATE POLICY "waitlist_insert_public"
+  ON public.waitlist FOR INSERT
+  WITH CHECK (true);
+
+-- Solo admin puede ver la lista
+CREATE POLICY "waitlist_select_admin"
+  ON public.waitlist FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+-- =========================================================
 -- TRIGGER: Crear perfil automáticamente al registrarse
 -- =========================================================
 
