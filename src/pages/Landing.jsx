@@ -360,11 +360,15 @@ export default function Landing() {
       <section ref={kit1Ref} id="kit1" className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="section-label mb-3">Kit #1</p>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="section-label">Kit #1</span>
+              <span className="section-label">Kit educativo imprimible</span>
+            </div>
             <h2 className="section-title">"Así piensa la IA"</h2>
             <p className="section-subtitle max-w-xl mx-auto">
-              Tokens, probabilidad y temperatura. Los mismos conceptos que hacen funcionar
-              a ChatGPT, explicados con materiales que los niños pueden tocar.
+              Acá entenderemos qué son los tokens, cómo funciona la probabilidad
+              y para qué sirve la temperatura en la IA — los conceptos detrás de ChatGPT,
+              explicados con materiales que los niños pueden tocar.
             </p>
           </div>
 
