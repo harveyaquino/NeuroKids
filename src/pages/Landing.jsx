@@ -136,8 +136,8 @@ function WaitlistForm() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-white font-semibold text-lg">¡Listo! Te avisamos primero.</p>
-        <p className="text-blue-200 text-sm">Revisa tu bandeja de entrada.</p>
+        <p className="text-white font-semibold text-lg">¡Listo! Quedaste en la lista.</p>
+        <p className="text-blue-200 text-sm">Te avisaremos cuando lancemos fechas y precios.</p>
       </div>
     );
   }
@@ -303,9 +303,13 @@ export default function Landing() {
 
       {/* ── PAÍSES ───────────────────────────────────────────── */}
       <div className="border-y border-gray-200 bg-gray-50 py-4 px-4">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-gray-600 font-medium">
-          {['🇵🇪 Perú', '🇲🇽 México', '🇨🇴 Colombia', '🇦🇷 Argentina', '🇨🇱 Chile'].map(c => (
-            <span key={c}>{c}</span>
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center items-center gap-2 text-sm text-gray-500 font-medium">
+          <span className="text-gray-400 text-xs uppercase tracking-widest mr-2">Disponible en</span>
+          {['Perú', 'México', 'Colombia', 'Argentina', 'Chile'].map((c, i, arr) => (
+            <span key={c} className="flex items-center gap-2">
+              <span className="text-gray-700 font-semibold">{c}</span>
+              {i < arr.length - 1 && <span className="text-gray-300">·</span>}
+            </span>
           ))}
         </div>
       </div>

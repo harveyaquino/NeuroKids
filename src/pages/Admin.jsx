@@ -12,18 +12,20 @@ export default function Admin() {
   const [purchases, setPurchases] = useState([]);
   const [users, setUsers]         = useState([]);
   const [products, setProducts]   = useState([]);
+  const [waitlist, setWaitlist]   = useState([]);
   const [loading, setLoading]     = useState(true);
   const [tab, setTab]             = useState('purchases');
 
   useEffect(() => { fetchAll(); }, []);
 
   const fetchAll = async () => {
-    const [p, u, pr] = await Promise.all([
+    const [p, u, pr, w] = await Promise.all([
       supabase.from('purchases').select('*, profiles(full_name, email), products(name)').order('created_at', { ascending: false }),
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('waitlist').select('*').order('created_at', { ascending: false }),
     ]);
-    setPurchases(p.data || []); setUsers(u.data || []); setProducts(pr.data || []);
+    setPurchases(p.data || []); setUsers(u.data || []); setProducts(pr.data || []); setWaitlist(w.data || []);
     setLoading(false);
   };
 
@@ -43,7 +45,7 @@ export default function Admin() {
     );
   }
 
-  const TABS = [{ key: 'purchases', label: 'Compras' }, { key: 'users', label: 'Usuarios' }, { key: 'products', label: 'Productos' }];
+  const TABS = [{ key: 'purchases', label: 'Compras' }, { key: 'users', label: 'Usuarios' }, { key: 'products', label: 'Productos' }, { key: 'waitlist', label: `Waitlist (${waitlist.length})` }];
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
@@ -174,6 +176,31 @@ export default function Admin() {
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            )}
+            {tab === 'waitlist' && (
+              <table className="w-full text-sm">
+                <thead className="border-b border-gray-100 bg-gray-50/50">
+                  <tr>
+                    {['Email', 'Tipo', 'Fecha'].map((h) => (
+                      <th key={h} className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {waitlist.map((w) => (
+                    <tr key={w.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-5 py-4 font-medium text-gray-900">{w.email}</td>
+                      <td className="px-5 py-4">
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${w.type === 'docente' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-orange-50 text-orange-700 border-orange-100'}`}>
+                          {w.type === 'docente' ? 'Docente' : 'Padre/Madre'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-gray-400 text-xs">{new Date(w.created_at).toLocaleDateString('es-PE')}</td>
+                    </tr>
+                  ))}
+                  {!waitlist.length && <tr><td colSpan={3} className="px-5 py-12 text-center text-gray-400">Sin registros aún</td></tr>}
                 </tbody>
               </table>
             )}
