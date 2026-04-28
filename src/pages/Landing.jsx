@@ -257,9 +257,9 @@ export default function Landing() {
 
             {/* Texto */}
             <div>
-              <div className="inline-flex items-center gap-2 bg-primary-light text-primary-dark text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-blue-200">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                Para docentes de Perú y Latinoamérica
+              <div className="inline-flex items-center gap-2 bg-orange-50 text-accent text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-orange-200">
+                <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                ⚡ Precio de lanzamiento — Solo por tiempo limitado
               </div>
 
               <h1 className="font-display font-black text-4xl sm:text-5xl text-gray-900 leading-[1.1] mb-5">
@@ -268,21 +268,21 @@ export default function Landing() {
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg">
-                Kits imprimibles para enseñar IA generativa a niños de 6 a 12 años.
-                Sin pantallas, sin código, listo para usar mañana.
+                La primera clase de IA que puedes facilitar mañana — sin saber de tecnología,
+                sin pantallas, con materiales físicos que los niños van a querer llevarse a casa.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <button onClick={scrollToKit} className="btn-primary text-base py-3.5 px-7">
-                  Ver el Kit #1 →
+                  Quiero el Kit #1 — S/ 49 →
                 </button>
                 <button onClick={scrollToKit} className="btn-secondary text-base py-3.5 px-7">
-                  ¿Qué incluye?
+                  Ver qué incluye ↓
                 </button>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
-                {['Descarga inmediata', 'Pago 100% seguro', 'Garantía 30 días'].map((item) => (
+                {['Listo para imprimir hoy', 'Garantía 30 días', '+100 docentes ya lo usan'].map((item) => (
                   <span key={item} className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
