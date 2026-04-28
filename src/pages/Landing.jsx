@@ -651,7 +651,7 @@ export default function Landing() {
       <section className="py-24 px-4 bg-primary">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="font-display font-black text-4xl sm:text-5xl text-white mb-4 leading-tight">
-            Enseña IA de la misma forma en que los niños siempre aprendieron — tocando.
+            Enseña IA de la misma forma en que los niños siempre aprendieron — con los sentidos.
           </h2>
           <p className="text-blue-100 text-lg mb-10">
             Más de 100 docentes y padres ya lo están haciendo. Sé el próximo.
