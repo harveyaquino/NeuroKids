@@ -10,7 +10,7 @@ const BENEFITS = [
   { icon: '📵', title: 'Sin pantallas', desc: 'Todo en papel. Los niños aprenden IA tocando, armando y jugando.' },
   { icon: '🖨️', title: 'Listo para imprimir', desc: 'Descarga el PDF y en 20 minutos tienes el kit armado.' },
   { icon: '📋', title: 'Guía paso a paso', desc: '3 sesiones de 45 min con instrucciones claras para cualquier docente.' },
-  { icon: '🤖', title: 'IA real, no juguetes', desc: 'Los mismos conceptos de ChatGPT: tokens, probabilidad, temperatura.' },
+  { icon: '🤖', title: 'IA real, no juguetes', desc: 'Los mismos conceptos detrás de ChatGPT — explicados a través de materiales que los niños pueden tocar y manipular.' },
 ];
 
 const KIT_CONTENTS = [
@@ -263,13 +263,13 @@ export default function Landing() {
               </div>
 
               <h1 className="font-display font-black text-4xl sm:text-5xl text-gray-900 leading-[1.1] mb-5">
-                Tus alumnos ya usan IA.{' '}
-                <span className="text-primary">¿Sabes cómo enseñarles a entenderla?</span>
+                Los niños aprenden con los sentidos.{' '}
+                <span className="text-primary">Siempre fue así. Y la IA no es la excepción.</span>
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg">
-                La primera clase de IA que puedes facilitar mañana — sin saber de tecnología,
-                sin pantallas, con materiales físicos que los niños van a querer llevarse a casa.
+                Con estos kits, cualquier docente o padre puede enseñar cómo funciona la IA —
+                con materiales físicos, sin pantallas, sin saber de tecnología.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
@@ -315,7 +315,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">El problema</p>
-            <h2 className="section-title">La IA llegó al mundo,<br />pero no a las aulas</h2>
+            <h2 className="section-title">La IA llegó. Los niños la usan.<br />Pero nadie les enseña cómo funciona.</h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
@@ -338,10 +338,10 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <p className="section-label mb-3">La solución</p>
-            <h2 className="section-title">ConociendoIA: IA tangible,<br />aprendizaje real</h2>
+            <h2 className="section-title">Aprender tocando.<br />Así siempre fue. Así también se aprende IA.</h2>
             <p className="section-subtitle max-w-2xl mx-auto">
-              Materiales 100% imprimibles pensados para docentes sin experiencia técnica,
-              que convierten conceptos de IA en actividades físicas y divertidas.
+              Kits imprimibles que convierten conceptos de IA en materiales físicos —
+              para que cualquier docente o padre los facilite sin experiencia técnica.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -647,10 +647,10 @@ export default function Landing() {
       <section className="py-24 px-4 bg-primary">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="font-display font-black text-4xl sm:text-5xl text-white mb-4 leading-tight">
-            Tu aula puede ser donde los niños entiendan la IA
+            Enseña IA de la misma forma en que los niños siempre aprendieron — tocando.
           </h2>
           <p className="text-blue-100 text-lg mb-10">
-            Únete a los docentes que ya están preparando a sus alumnos para el futuro.
+            Más de 100 docentes y padres ya lo están haciendo. Sé el próximo.
           </p>
           {purchasedIds.has(kit1?.id) ? (
             <button
