@@ -263,8 +263,8 @@ export default function Landing() {
               </div>
 
               <h1 className="font-display font-black text-4xl sm:text-5xl text-gray-900 leading-[1.1] mb-5">
-                Los niños aprenden con los sentidos.{' '}
-                <span className="text-primary">Siempre fue así. Y la IA no es la excepción.</span>
+                Enseña IA de la misma forma en que los niños siempre aprendieron —{' '}
+                <span className="text-primary">con los sentidos.</span>
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-lg">
