@@ -112,8 +112,8 @@ export default function Admin() {
                       </td>
                       <td className="px-5 py-4 text-gray-400 text-xs">{new Date(p.created_at).toLocaleDateString('es-PE')}</td>
                       <td className="px-5 py-4">
-                        <div className="text-gray-400 text-xs font-mono">purchase: {p.id?.slice(0, 8)}…</div>
-                        <div className="text-gray-400 text-xs font-mono">product: {p.product_id?.slice(0, 8)}…</div>
+                        <div className="text-gray-400 text-xs font-mono">purchase: {p.id}</div>
+                        <div className="text-gray-400 text-xs font-mono">product: {p.product_id}</div>
                       </td>
                     </tr>
                   ))}
@@ -152,7 +152,7 @@ export default function Admin() {
               <table className="w-full text-sm">
                 <thead className="border-b border-gray-100 bg-gray-50/50">
                   <tr>
-                    {['Producto', 'Precio', 'Estado', 'Acción'].map((h) => (
+                    {['ID', 'Producto', 'Precio', 'Estado', 'Acción'].map((h) => (
                       <th key={h} className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                     ))}
                   </tr>
@@ -160,6 +160,7 @@ export default function Admin() {
                 <tbody className="divide-y divide-gray-50">
                   {products.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-5 py-4 font-mono text-xs text-gray-400">{p.id}</td>
                       <td className="px-5 py-4">
                         <div className="font-medium text-gray-900">{p.name}</div>
                         <div className="text-gray-400 text-xs truncate max-w-xs">{p.description}</div>
