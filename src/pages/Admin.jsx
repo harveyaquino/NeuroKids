@@ -91,7 +91,7 @@ export default function Admin() {
               <table className="w-full text-sm">
                 <thead className="border-b border-gray-100 bg-gray-50/50">
                   <tr>
-                    {['Usuario', 'Producto', 'Monto', 'Estado', 'Fecha'].map((h) => (
+                    {['Usuario', 'Producto', 'Monto', 'Estado', 'Fecha', 'IDs'].map((h) => (
                       <th key={h} className="text-left px-5 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                     ))}
                   </tr>
@@ -111,9 +111,13 @@ export default function Admin() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-gray-400 text-xs">{new Date(p.created_at).toLocaleDateString('es-PE')}</td>
+                      <td className="px-5 py-4">
+                        <div className="text-gray-400 text-xs font-mono">purchase: {p.id?.slice(0, 8)}…</div>
+                        <div className="text-gray-400 text-xs font-mono">product: {p.product_id?.slice(0, 8)}…</div>
+                      </td>
                     </tr>
                   ))}
-                  {!purchases.length && <tr><td colSpan={5} className="px-5 py-12 text-center text-gray-400">Sin compras aún</td></tr>}
+                  {!purchases.length && <tr><td colSpan={6} className="px-5 py-12 text-center text-gray-400">Sin compras aún</td></tr>}
                 </tbody>
               </table>
             )}
